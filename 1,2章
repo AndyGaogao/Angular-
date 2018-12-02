@@ -1,0 +1,474 @@
+Angular笔记
+一.Angular基础知识
+1.Angular环境配置
+Angular项目目录
+第一层目录
+Karma 单元测试执行器 自动化测试
+Package.json npm配置文件 所需的第三方依赖包
+
+、angular模块
+Protractor.conf.js 自动化测试
+标准说明
+tslink.json
+
+Src目录
+ App 代码
+ Assets 静态资源
+ Environment 
+ Index.html 根html 系统启动第一个访问 <app-root>标签
+ Main.ts 脚本执行的入口点，angular通过这个文件启动项目
+Pollyfiles.ts 导入一些库，使Angular运行在老版本浏览器
+ Styles.css 应用全局的一些样式
+ Test.ts 自动化测试
+ Tsconfig.son
+
+一个angular项目至少需要一个模块，一个组件
+App 
+App.component.ts 组件地基，在这个上面建立项目
+App.module.ts 模型
+
+Component组件的必备元素
+(1)装饰器 @Component() 
+告诉Angular框架如何处理一个typescript类
+包含多个属性，这些属性的值叫做源数据，
+angular会根据源数据的值渲染组件，并执行组件的逻辑
+(2)模板 Template
+根据组件自带的模板，定义组件的外观，以html形式存在，告诉Angular如何渲染组件
+使用angular的数据绑定语法来呈现控制器中的数据
+(3)控制器 Controller
+普通的typescript类，被装饰器装饰，控制器会包含组件的所有属性和方法、绝大多数的页面逻辑，通过数据绑定与模板通信，
+模板展示控制器的数据，控制器处理模板发出的实践
+ App.component.ts
+
+数据绑定
+Html(模板)各个部分与控制器各个部分相互作用的一个机制
+在html中添加绑定标记告诉Angular如何把二者联系起来
+方式一：{{ title }} 差值表达式，将组件的值绑定到模板
+Component组件
+
+可选的可注入对象
+(1)输入属性 @Inputs()
+用来接收外来的数据的，使得父组件可以直接传递信息给子组件
+Angular程序就是一个组件树，输入属性可以在其中传递信息
+(2)提供器 providers 
+做依赖输入的
+(3)生命周期钩子 Lifecycle Hooks
+在一个组件从创建到销毁的过程中，有多个钩子可以被用来触发，执行各种业务逻辑
+
+可选的输出对象
+(1)样式表styles
+(2)动画Animations 方便创建与组件相关的动画效果
+(3)输出属性 @Outputs 定义一些其他组件可能会感兴趣的事件，或者在组件间共享数据
+(4)生命周期钩子
+
+2.启动Angular应用
+启动时加载了那个页面？
+启动时加载了哪些脚本？
+这些脚本做了什么事？
+
+启动项目
+(1)添加一个npm的脚本命令auction_start，选择脚本scripts中的start
+(在package.json中定义，scripts中有ng、start、link、test、pree2e、e2e)
+(2)启动项目
+当前建立起来的开发环境会自动侦测src目录下的改变，任何对src目录下的改变都会使服务器自动加载修改后的文件，然后刷新页面。
+
+二.开发Angular在线竞拍程序sell初级版本
+1．开发准备
+如何设置第三方依赖？
+Angular项目包括jquery、bootstrap这两个第三方库，正式开发前需要将这些类库引入到angular项目中
+使用第三方类库需要3步：
+(1)将第三方类库安装到本地
+当前项目目录下bogon:auction zhailiang$ npm install jquery --save
+Bogon:auction zhailiang$ npm install bootstrap --save
+下载完成后可以在node-modules目录中找到对应的包，在package.json中加了语句"bootstrap": "^4.1.3", "jquery": "^3.3.1"
+(2)把这两个库引到项目里
+修改angular-cli.json文件
+apps配置下的scripts属性和styles属性，需要用到的第三方的库
+把jquery和bootstrap的css、js添加到这两个字段里
+      "styles": [
+        "styles.css",
+        
+
+"C:/Users/Administrator/sell/node_modules/_bootstrap@4.1.3@bootstrap/dist/js/bootstrap.m
+
+in.js",
+      ],
+      "scripts": [
+        
+
+"C:/Users/Administrator/sell/node_modules/_j
+
+query@3.3.1@jquery/dist/jquery.min.js",
+        
+
+"C:/Users/Administrator/sell/node_modules/_b
+
+ootstrap@4.1.3@bootstrap/dist/js/bootstrap.m
+
+in.js"
+      ],
+(3)在app.component中添加代码
+Test(){
+ $(“xxxx”).show()
+}
+
+//jquery是Javascript的东西，typescript不可以直接用，需要把jquery和bootstrap的类型描述文件也安装到本地的库里，才能认识 $ doller符安装类型描述文件：
+Bogon:auction zhailiang$ npm install @types/jquery --save-dev
+Bogon:auction zhailiang$ npm install @types/bootstrap --save-dev
+安装目的：让typescript的代码认识jquery和bootstrap，可以在typescript中调用jquery和
+bootstrap的东西
+
+然后又删除了Test
+
+angular框架的设计目标中最主要的目标之一：帮助开发人员方便的开发出可重用的组件
+
+在线竞拍程序的主页面，七个组件
+(1)App组件 应用的地基，命令行自动生成，最大的组件
+(2)导航栏组件
+(3)页脚组件
+(4)搜索表单组件
+(5)轮播图组件
+(6)商品展示组件
+(7)星级评价组件
+
+建立组件 ng g component xxx
+(1)建立导航栏 ng g component navbar
+(2)建立页脚 ng g component footer
+(3)建立搜索表单栏 ng g component search
+(4)建立轮播图 ng g component carousel
+(5)建立产品信息 ng g component product
+(6)建立星级评价 ng g component stars
+
+每执行一次ng g component xxx，生成4个文件
+Src/app/xxx/xxx.component.css
+Src/app/xxx/xxx.component.html
+Src/app/xxx/xxx.component.spec.ts
+Src/app/xxx/xxx.component.ts
+并自动更新src/app/app/.module.ts，将新生成的
+
+组件注册到模块里
+@NgModule({
+  Declarations:[
+AppComponent
+NavbarComponent
+FooterComponent
+SearchComponent
+CarouseComponent
+ProductComponent
+StartsComponent
+],
+})
+App目录下多了6个文件夹，存放6个组件的代码
+
+2.开发组件
+(1)开发app组件
+文件app.component.html
+<app-navbar></app-navbar>
+<div class=”container”>
+	<div class=”col-md-3”>
+		<app-search></app-search>
+	</div>
+	<div class=”col-md-9”>
+		<div class=”row carousel-container”>
+			<app-carousel></app-carousel>
+		</div>
+		<div class=”row”>
+			<app-product></app-product>
+		</div>
+	</div>
+</div>
+<app-footer></app-footer>
+(2)开发navbar组件
+文件navbar.component.html
+<nav class="navbar nacbar-inverse navbar-fixed-top"> 
+	<div class="container">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-exl-collapse">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#">在线竞拍</a>
+		</div>
+		<div class="collapse navbar-collapse navbar-exl-collapse">
+			<ul class="nav navbar-nav">
+				<li><a href='#'>关于我们</a></li>
+				<li><a href='#'>联系我们</a></li>
+				<li><a href='#'>网站地图</a></li>
+			</ul>
+		</div>
+	</div>
+</nav>
+
+在全局样式添加一个样式，让被导航条覆盖的内容
+
+显示出来
+文件styles.css
+body{
+	padding-top:70px;
+}
+
+(3)开发footer组件
+文件footer.component.html
+<div>
+	<hr>
+	<footer>
+		<div class="row">
+			<div class="col-lg-12">
+				<p>angular实战_sell</p>
+			</div>
+		</div>
+	</footer>
+</div>
+
+(4)开发search组件
+文件search.component.html
+<form name="searchForm" role="form">
+	<div class="form-group">
+		<label for="productTitle">商品名称</label>
+		<input type="text" id="productTitle" placeholder="商品名称" class="form-control"></input>
+		<label for="productPrice">商品价格</label>
+		<input type="number" id="productPrice" placeholder="商品价格" class="form-control"></input>
+		<label for="productCategory">商品类别</label>
+		<select id="productCategory" class="form-control"></select>
+	</div>
+	<div class="form-group">
+		<button type="submit" class="btn btn-primary btn-block">搜索</button>
+	</div>
+</form>
+
+(5)开发carousel组件
+文件carousel.component.html
+<div class="carosel slide" data-ride="carousel">
+	<ol class="carousel-indicators">
+		<li class="active"></li>
+		<li></li>
+		<li></li>
+	</ol>
+	<div class="carousel-innner"">
+		<div class="item active">//
+
+第一个是激活状态
+			<img class="slide-image" src="http://placehold.it/800*300></img>
+		</div>
+		<div class="item">
+			<img class="slide-image" src="http://placehold.it/800*300></img>
+		</div>
+		<div class="item">
+			<img class="slide-image" src="http://placehold.it/800*300></img>
+		</div>
+		<a class="left carousel-control" href="javascript:$('.carousel').carousel('prev')">
+			<span class="glyphicon glyphicon-chevron-left"></span>//左箭头
+		</a>//向左滚动
+		<a class="right carousel-control" href="javascript:$('.carousel').carousel('next')">
+			<span class="glyphicon glyphicon-chevron-right"></span>//右箭头
+		</a>//向右滚动
+	</div>
+</div>
+
+文件carousel.component.css
+.slide-image{
+	width:100%;
+}
+
+(6)开发product组件
+理思路:用typescript来写程序，需要一个对象封装产品信息
+
+文件product.component.ts
+import {Component, OnInit} from 
+
+'@angular/core';
+
+@Component({
+	selector: 'app-product',
+	templateUrl: 
+
+'./product.component.html',
+	styleUrls: 
+
+['./product.component.css']
+})
+//控制器
+export class ProductComponent implements 
+
+OnInit{
+	//声明一个数组，存储展示在页面上的数据
+	private products: Array<Product>;
+	  
+    private imgUrl = 'http://placehold.it/320*150';
+	
+	constructor(){}
+	
+	ngOnInit(){//组件生命周期钩子中的一个，在组件被实例化以后调用一次,初始化组件中的数据
+		
+		this.products = [{
+			new Product(1,"第一个商品",1.99,3.5,"这是第一个商品",["电子产品"，"硬件设备"])，
+			new Product(2,"第二个商品",2.99,2.5,"这是第二个商品",["硬件设备"])，
+			new Product(3,"第三个商品",3.99,4.5,"这是第三个商品",["软件设备"])，
+			new Product(4,"第四个商品",4.99,1.5,"这是第四个商品",["电子产品"])，
+			new Product(5,"第五个商品",5.99,3.5,"这是第五个商品",["化妆品"])，
+			new Product(6,"第六个商品",6.99,2.5,"这是第六个商品",["图书"，"学习用品"])，
+			
+		}]
+	}
+}
+
+export class Product{//描述了产品包含的信息
+	constructor(
+		public id:number,
+		public title:string,
+		public price:number,
+		public rating:number,
+		public desc:string,
+		public 
+
+categories:Array<string>//类别为数组，一个商品可以归入多个类别
+	){
+	
+	}
+}
+
+如何将产品信息展示到页面上
+文件product.component.html
+<div *ngFor="let product of products" 
+
+class="col-md-4 col-sm-4 col-lg-4">
+	<div clas s="thumbnail">
+		<img [src]="imgUrl">
+		<div class="caption">
+			<h4 class="pull-
+
+right">{{product.price}}元</h4>
+			<h4><a>
+
+{{product.title}}</a></h4>
+			<p>{{product.desc}}
+
+</p>
+		</div>
+		<div>
+			<app-stars [rating]
+
+="product.rating"></app-stars>
+		</div>
+	</div>
+</div>
+
+第一个angular语句
+*ngFor="let product of products"
+products和后台的products数组是联系在一块的
+ngFor指令 循环products这个属性，每次循环的元素放在product这个变量里
+可以在后面的程序中使用product这个变量，用差值表达式来显示商品的信息
+angular看到这个语句就会循环products数组,然后根据数组中元素的数量生成相同数量的这段html代码（<div>标签里的内容）
+
+在轮播图和产品展示之间添加空隙
+app.component.css
+.carousel-container {
+	margin-bottom:40px;
+}
+
+angular核心思想：数据绑定(数据驱动)即页面长
+
+什么样是由后台的数据决定的
+与jquery的区别：jquery要操作页面的dom增加一个新商品，在app.component.ts中OnInit()中添加语句this.products.push(7,"第七个商品",7.99,2.5,"这是第七个商品",["手机"，"电器"]) )
+
+(7)开发stars组件
+开发星级组件的六个问题
+(1)如何显示一颗星星
+(2)如何显示一颗空心的星星
+<span *ngFor="let star of stars" 
+
+class="glyphicon glyphicon-star glyphicon-
+
+star-empty"></span>
+(3)如何显示五颗星星 在前台显示五颗星星，在后
+
+台应该有一个五个元素的数组
+(4)如何让这五颗星星有的空心有的实心
+数据绑定方式二：属性绑定
+<img [src]="imgUrl">
+把html标签的一个属性和后台的一个属性绑定在一起
+
+属性绑定的一个特例：样式绑定
+<span *ngFor="let star of stars" 
+
+class="glyphicon glyphicon-star"
+[class.glyphicon-star-empty]="star"></span>
+//span这个html元素是否出现glyphicon-star-
+
+empty这样一个css样式是由star决定的
+//如果star是true则span元素就会多出这个样式，
+
+如果star是false则span元素就不会有这个样式
+
+(5)如何将product商品组件中的数据传递给stars星级评价组件
+输入属性
+
+//文件stars.component.ts中
+@Input()
+private rating:number = 0;
+//StarsComponent这个组件的rating属性应该由它的父组件传递给它
+
+//文件product.component.html中
+<div>
+	<app-stars [rating]
+
+="product.rating"></app-stars>
+</div>
+
+(6)如何根据星级来决定星星是空心的还是实心的
+//文件stars.component.ts中
+ngOnInit() {
+	this.stars = [];
+	for (let i = 1; i<=5; i++){
+		this.stars.push
+
+(i>this.rating);
+	}
+ }
+ 
+文件stars.component.html
+<p>
+	<span *ngFor="let star of stars" 
+
+class="glyphicon glyphicon-star"
+	[class.glyphicon-star-empty]
+
+="star"></span>
+	<span>{{rating}}星</span>
+</p>
+
+文件stars.component.ts
+import { Component, OnInit } from 
+
+'@angular/core';
+
+@Component({
+  selector: 'app-stars',
+  templateUrl: './stars.component.html',
+  styleUrls: ['./stars.component.css']
+})
+export class StarsComponent implements 
+
+OnInit {
+  
+  private rating:number =0;//用来接收产品组件传给它的星级评价的数
+  
+  private stars: boolean[];
+  
+  constructor() { }
+
+  ngOnInit() {
+	this.stars = [];
+	for (let i = 1; i<=5; i++){
+		this.stars.push
+
+(i>this.rating);
+	}
+  }
+  
+ }
+
+}
+
+
